@@ -43,7 +43,7 @@
         },
         "bdEjemploEdition": {
             "type": "string",
-            "defaultValue": "Basic",
+            "defaultValue": "Premium",
             "allowedValues": [
                 "Basic",
                 "Standard",
