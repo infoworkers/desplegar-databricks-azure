@@ -12,7 +12,7 @@
             "defaultValue": "premium",
             "type": "String"
         },
-        "prmStorage": {
+        "Tipo de Almacenamiento": {
             "type": "string",
             "defaultValue": "Premium_LRS",
             "allowedValues": [
