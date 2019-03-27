@@ -1,53 +1,59 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "workspaceName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the Azure Databricks workspace to create."
-      }
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "String"
+        },
+        "workspaceName": {
+            "type": "String"
+        },
+        "tier": {
+            "defaultValue": "premium",
+            "type": "String"
+        },
+        "prmStorage": {
+            "type": "string",
+            "defaultValue": "Premium_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_ZRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+            ]
+        }
     },
-    "pricingTier": {
-      "type": "string",
-      "defaultValue": "premium",
-      "allowedValues": [
-        "standard",
-        "premium"
-      ],
-      "metadata": {
-        "description": "The pricing tier of workspace."
-      }
+    "variables": {
+        "managedResourceGroupId": "[concat(subscription().id, '/resourceGroups/', variables('managedResourceGroupName'))]",
+        "managedResourceGroupName": "[concat('databricks-rg-', parameters('workspaceName'), '-', uniqueString(parameters('workspaceName'), resourceGroup().id))]",
+        "prmStorageName": "[concat('stgiw-', uniqueString(resourceGroup().id))]"
     },
-    "location": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().location]",
-      "metadata": {
-        "description": "Location for all resources."
-      }
-    }
-  },
-  "variables": {
-    "managedResourceGroupName": "[concat('databricks-rg-', parameters('workspaceName'), '-', uniqueString(parameters('workspaceName'), resourceGroup().id))]"
-  },
-  "resources": [
-    {
-      "type": "Microsoft.Databricks/workspaces",
-      "name": "[parameters('workspaceName')]",
-      "location": "[parameters('location')]",
-      "apiVersion": "2018-04-01",
-      "sku": {
-        "name": "[parameters('pricingTier')]"
-      },
-      "properties": {
-        "ManagedResourceGroupId": "[concat(subscription().id, '/resourceGroups/', variables('managedResourceGroupName'))]"
-      }
-    }
-  ],
-  "outputs": {
-    "workspace": {
-      "type": "object",
-      "value": "[reference(resourceId('Microsoft.Databricks/workspaces', parameters('workspaceName')))]"
-    }
-  }
+    "resources": [
+        {
+            "type": "Microsoft.Databricks/workspaces",
+            "sku": {
+                "name": "[parameters('tier')]"
+            },
+            "name": "[parameters('workspaceName')]",
+            "apiVersion": "2018-04-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "ManagedResourceGroupId": "[variables('managedResourceGroupId')]"
+            }
+        },
+        {
+            "name": "[variables('prmStorageName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [],
+            "tags": {
+                "displayName": "Storage Databricks"
+            },
+            "properties": {
+                "accountType": "[parameters('prmStorage')]"
+            }
+        }
+    ]
 }
