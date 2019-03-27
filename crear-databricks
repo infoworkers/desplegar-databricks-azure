@@ -6,13 +6,14 @@
             "type": "String"
         },
         "workspaceName": {
+            "defaultValue": "[concat('databricks-', uniqueString(resourceGroup().id))]",
             "type": "String"
         },
         "tier": {
             "defaultValue": "premium",
             "type": "String"
         },
-        "Tipo de Almacenamiento": {
+        "prmStorage": {
             "type": "string",
             "defaultValue": "Premium_LRS",
             "allowedValues": [
