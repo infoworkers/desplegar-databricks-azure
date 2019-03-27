@@ -3,10 +3,11 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
+            "defaultValue": "East US 2",
             "type": "String"
         },
         "workspaceName": {
-            "defaultValue": "[concat('databricks-', uniqueString(resourceGroup().id))]",
+            "defaultValue": "databricks",
             "type": "String"
         },
         "tier": {
