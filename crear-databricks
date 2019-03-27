@@ -70,7 +70,7 @@
     "variables": {
         "managedResourceGroupId": "[concat(subscription().id, '/resourceGroups/', variables('managedResourceGroupName'))]",
         "managedResourceGroupName": "[concat('databricks-rg-', parameters('workspaceName'), '-', uniqueString(parameters('workspaceName'), resourceGroup().id))]",
-        "prmStorageName": "[concat('stgiw-', uniqueString(resourceGroup().id))]",
+        "prmStorageName": "[concat('stgiw', uniqueString(resourceGroup().id))]",
         "sqlserverName": "[concat('sqlserver', uniqueString(resourceGroup().id))]",
         "fullyQualifiedbdEjemploName": "[concat(variables('sqlserverName'), '/', parameters('bdEjemploName'))]"
     },
