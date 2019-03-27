@@ -1,0 +1,101 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "administratorLogin": {
+            "type": "string"
+        },
+        "administratorLoginPassword": {
+            "type": "securestring"
+        },
+        "databaseName": {
+            "type": "string"
+        },
+        "requestedServiceObjectiveId": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "serverName": {
+            "type": "string"
+        },
+        "storageKeyType": {
+            "type": "string"
+        },
+        "storageKey": {
+            "type": "securestring"
+        },
+        "storageUri": {
+            "type": "string"
+        },
+        "collation": {
+            "type": "string"
+        },
+        "allowAzureIps": {
+            "type": "bool",
+            "defaultValue": true
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-05-01-preview",
+            "name": "[parameters('serverName')]",
+            "type": "Microsoft.Sql/servers",
+            "location": "[parameters('location')]",
+            "properties": {
+                "administratorLogin": "[parameters('administratorLogin')]",
+                "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+                "version": "12.0"
+            },
+            "resources": [
+                {
+                    "condition": "[parameters('allowAzureIps')]",
+                    "apiVersion": "2014-04-01-preview",
+                    "name": "AllowAllWindowsAzureIps",
+                    "type": "firewallrules",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+                    ],
+                    "properties": {
+                        "endIpAddress": "0.0.0.0",
+                        "startIpAddress": "0.0.0.0"
+                    }
+                },
+                {
+                    "apiVersion": "2014-04-01-preview",
+                    "name": "[parameters('databaseName')]",
+                    "type": "databases",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+                    ],
+                    "properties": {
+                        "edition": "DataWarehouse",
+                        "requestedServiceObjectiveId": "[parameters('requestedServiceObjectiveId')]",
+                        "collation": "[parameters('collation')]"
+                    },
+                    "resources": [
+                        {
+                            "apiVersion": "2014-04-01-preview",
+                            "name": "PolybaseImport",
+                            "type": "extensions",
+                            "dependsOn": [
+                                "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/databases/', parameters('databaseName'))]"
+                            ],
+                            "properties": {
+                                "storageKeyType": "[parameters('storageKeyType')]",
+                                "storageKey": "[parameters('storageKey')]",
+                                "storageUri": "[parameters('storageUri')]",
+                                "administratorLogin": "[parameters('administratorLogin')]",
+                                "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+                                "operationMode": "PolybaseImport"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
