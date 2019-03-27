@@ -52,7 +52,7 @@
         },
         "bdEjemploRequestedServiceObjectiveName": {
             "type": "string",
-            "defaultValue": "P3",
+            "defaultValue": "P2",
             "allowedValues": [
                 "Basic",
                 "S0",
